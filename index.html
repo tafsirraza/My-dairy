@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Diary</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top, #f7e7d0, #e3c6a4, #bfa17f);
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+
+        .diary-container {
+            width: 400px; /* Reduced width */
+            height: 300px; /* Reduced height */
+            perspective: 1500px; /* Slightly reduced perspective for a smaller size */
+        }
+
+        .diary {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Reduced shadow for a smaller size */
+            border-radius: 10px;
+        }
+
+        .cover {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            transform-origin: left;
+            transform: rotateY(0deg);
+            transition: transform 1s ease;
+            border-radius: 10px;
+            box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .cover .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px; /* Reduced font size */
+            color: #FFE4B5;
+            text-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .cover:hover {
+            transform: rotateY(-170deg);
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            background: #FFF8DC;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px; /* Reduced padding */
+            line-height: 1.4; /* Adjusted line height */
+            font-size: 16px; /* Reduced font size */
+            color: #333;
+            overflow: hidden;
+            transition: transform 1s ease;
+            border-radius: 10px;
+        }
+
+        .page h2 {
+            font-size: 20px; /* Reduced font size */
+            margin-bottom: 15px;
+            color: #8B4513;
+            font-weight: bold;
+            text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .page p {
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .page:not(:first-child) {
+            background: linear-gradient(to right, #FFF8DC 30%, #F5DEB3);
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px; /* Adjusted position */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px; /* Adjusted gap */
+        }
+
+        .control-button {
+            padding: 10px 20px; /* Reduced padding */
+            background-color: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px; /* Reduced font size */
+            transition: background-color 0.3s ease;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .control-button:hover {
+            background-color: #A0522D;
+        }
+
+        .control-button:active {
+            transform: translateY(2px);
+        }
+
+        .diary-bookmark {
+            position: absolute;
+            top: 0;
+            right: -15px;
+            width: 25px; /* Reduced width */
+            height: 100%;
+            background: linear-gradient(135deg, #FF6347, #FF4500);
+            border-radius: 0 10px 10px 0;
+            box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .diary-bookmark:before {
+            content: 'Diary';
+            position: absolute;
+            top: 50%;
+            left: -40px;
+            transform: rotate(-90deg) translateX(-50%);
+            color: white;
+            font-size: 18px; /* Reduced font size */
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="diary-container">
+    <div class="diary">
+        <div class="diary-bookmark"></div>
+        <div class="cover">
+            <div class="title">My Diary</div>
+        </div>
+        <div class="page">
+            <h2>Day 1</h2>
+            <p>Today was a beautiful day! I learned so many new things and felt inspired to write them down. The weather was perfect, and I enjoyed a long walk in the park.</p>
+        </div>
+        <div class="page">
+            <h2>Day 2</h2>
+            <p>Explored some new ideas for my project and came up with some creative solutions. It was a productive day, and I'm excited about the progress I'm making.</p>
+        </div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="control-button" id="prev-page">Previous Page</button>
+    <button class="control-button" id="next-page">Next Page</button>
+</div>
+
+<script>
+    const diary = document.querySelector('.diary');
+    const pages = document.querySelectorAll('.page');
+    const cover = document.querySelector('.cover');
+    let currentPage = 0;
+
+    document.getElementById('prev-page').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            updateDiary();
+        }
+    });
+
+    document.getElementById('next-page').addEventListener('click', () => {
+        if (currentPage < pages.length) {
+            currentPage++;
+            updateDiary();
+        }
+    });
+
+    function updateDiary() {
+        cover.style.transform = currentPage > 0 ? 'rotateY(-170deg)' : 'rotateY(0deg)';
+        pages.forEach((page, index) => {
+            page.style.transform = index <= currentPage ? `rotateY(${index * -180}deg)` : 'rotateY(0deg)';
+        });
+    }
+</script>
+
+</body>
+</html>
